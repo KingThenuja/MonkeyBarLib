@@ -1,0 +1,5 @@
+plugins {
+    id "com.modrinth.minotaur" version "2.+"
+    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
+    id 'net.neoforged.moddev' version '2.0.49-beta' apply false
+}

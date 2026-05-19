@@ -2,9 +2,6 @@ package dev.thenu.mk.api.register;
 
 import dev.thenu.mk.registry.Block.BlockEntity.BlockEntityFactory;
 import dev.thenu.mk.registry.Block.BlockFamilyBuilder.BlockFamily;
-import dev.thenu.mk.registry.Block.Unprotected.DoorBlock;
-import dev.thenu.mk.registry.Block.Unprotected.StairBlock;
-import dev.thenu.mk.registry.Block.Unprotected.TrapdoorBlock;
 import dev.thenu.mk.registry.RegistryObjects.RegistryObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -186,7 +183,7 @@ public class RegistryHelper {
                         BlockBehaviour.Properties.ofFullCopy(base.get()).noOcclusion()));
 
         RegistryObject<Block> trapdoor = registerBlockWithItem(name + "_trapdoor",
-                () -> new TrapdoorBlock(BlockSetType.OAK,
+                () -> new TrapDoorBlock(BlockSetType.OAK,
                         BlockBehaviour.Properties.ofFullCopy(base.get()).noOcclusion()));
 
         return new BlockFamily(base, stairs, slab, wall, fence, fenceGate, door, trapdoor);

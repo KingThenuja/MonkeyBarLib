@@ -28,7 +28,8 @@ Create a single `RegistryHelper` instance per mod, accessible statically.
 ```java
 public class MyMod {
     public static final String MOD_ID = "mymod";
-    public static final RegistryHelper REGISTRY = new RegistryHelper(MOD_ID);
+    public static final RegistryHelper REGISTRY // <- you can change the REGISTRY to anything you want just change the other REGISTRY references to your  
+            = new RegistryHelper(MOD_ID);
 }
 ```
 

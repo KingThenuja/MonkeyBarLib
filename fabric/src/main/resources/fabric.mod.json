@@ -12,13 +12,13 @@
         "sources": "https://github.com/FabricMC/fabric-example-mod"
     },
     "license": "${license}",
-    "icon": "${mod_id}.png",
+    "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
           "dev.thenu.mk.MonkeyBar"
         ]
-    }
+    },
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",

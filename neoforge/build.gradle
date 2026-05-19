@@ -5,8 +5,9 @@ plugins {
 }
 
 neoForge {
-    version = neoforge_version
-    // Automatically enable neoforge AccessTransformers if the file exists
+    // Replace neoforge version with neoform version
+    neoFormVersion = neo_form_version
+
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
@@ -18,22 +19,14 @@ neoForge {
     runs {
         configureEach {
             systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
         }
-        client {
-            client()
-        }
+        client { client() }
         data {
             data()
-
-            // DataGen can be run by - "./gradlew :neoforge:runData" in Terminal.
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-
         }
-        server {
-            server()
-        }
+        server { server() }
     }
     mods {
         "${mod_id}" {
@@ -41,14 +34,16 @@ neoForge {
         }
     }
 }
+
 modrinth {
     token = "${token}"
     projectId = "${projectId}"
     versionNumber = "1.0"
     versionType = "release"
-    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+    uploadFile = jar
     gameVersions = ["1.21", "1.21.1"]
     loaders = ["neoforge"]
     changelog = rootProject.file("CHANGELOG.md").text
 }
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }

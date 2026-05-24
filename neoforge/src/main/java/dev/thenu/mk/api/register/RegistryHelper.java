@@ -2,6 +2,9 @@ package dev.thenu.mk.api.register;
 
 import dev.thenu.mk.registry.Block.BlockEntity.BlockEntityFactory;
 import dev.thenu.mk.registry.Block.BlockFamilyBuilder.BlockFamily;
+import dev.thenu.mk.registry.Block.Unprotected.DoorBlock;
+import dev.thenu.mk.registry.Block.Unprotected.StairBlock;
+import dev.thenu.mk.registry.Block.Unprotected.TrapDoorBlock;
 import dev.thenu.mk.registry.RegistryObjects.RegistryObject;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

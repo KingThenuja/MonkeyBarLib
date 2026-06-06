@@ -101,24 +101,31 @@ public class RegistryHelper {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public <T extends BlockEntity> net.minecraftforge.registries.RegistryObject<BlockEntityType<T>>
-    registerBlockEntity(String name, BlockEntityFactory<T> factory, Supplier<Block[]> validBlocks) {
+    public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(
+            String name,
+            BlockEntityFactory<T> factory,
+            Supplier<Block[]> validBlocks) {
+
         return BLOCK_ENTITIES.register(name, () -> {
             try {
                 Class<?> supplierInterface = Class.forName(
                         "net.minecraft.world.level.block.entity.BlockEntityType$BlockEntitySupplier");
+
                 Object supplierProxy = java.lang.reflect.Proxy.newProxyInstance(
                         BlockEntityType.class.getClassLoader(),
                         new Class[]{ supplierInterface },
                         (proxy, method, args) ->
                                 factory.create((BlockPos) args[0], (BlockState) args[1]));
+
                 java.lang.reflect.Method ofMethod = Arrays.stream(
                                 BlockEntityType.Builder.class.getDeclaredMethods())
                         .filter(m -> m.getName().equals("of"))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Builder.of() not found"));
+
                 BlockEntityType.Builder<T> builder =
                         (BlockEntityType.Builder<T>) ofMethod.invoke(null, supplierProxy, validBlocks.get());
+
                 return builder.build(null);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to register block entity: " + name, e);

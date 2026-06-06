@@ -1,6 +1,6 @@
 package dev.thenu.mk.registry.Item.ItemGroup;
 
-import net.minecraft.world.item.Item;
+import net.minecraft.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,10 @@
 package dev.thenu.mk.registry.Block.Unprotected;
 
-import net.minecraft.world.level.block.state.properties.BlockSetType;
 
-public class DoorBlock extends net.minecraft.world.level.block.DoorBlock {
-    public DoorBlock(BlockSetType type, Properties props) {
+import net.minecraft.block.BlockSetType;
+
+public class DoorBlock extends net.minecraft.block.DoorBlock {
+    public DoorBlock(BlockSetType type, Settings props) {
         super(type, props);
     }
 }

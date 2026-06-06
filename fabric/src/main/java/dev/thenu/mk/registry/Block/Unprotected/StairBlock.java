@@ -1,9 +1,11 @@
 package dev.thenu.mk.registry.Block.Unprotected;
 
-import net.minecraft.world.level.block.state.BlockState;
 
-public class StairBlock extends net.minecraft.world.level.block.StairBlock {
-    public StairBlock(BlockState baseState, Properties properties) {
+import net.minecraft.block.BlockState;
+import net.minecraft.block.StairsBlock;
+
+public class StairBlock extends StairsBlock {
+    public StairBlock(BlockState baseState, Settings properties) {
         super(baseState, properties);
     }
 }

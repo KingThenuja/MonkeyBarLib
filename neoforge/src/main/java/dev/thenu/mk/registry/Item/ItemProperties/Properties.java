@@ -25,6 +25,6 @@ public class Properties {
     public static BlockBehaviour.Properties copyDirt() {return copyOf(Blocks.DIRT);}
     public static BlockBehaviour.Properties copySand() {return copyOf(Blocks.SAND);}
     public static FoodProperties food(int nutrition, float saturation) {return new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build();}
-    public static FoodProperties fastFood(int nutrition, float saturation) {return new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).fast().build();}
+    public static FoodProperties fastFood(int nutrition, float saturation) {return new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build();}
     public static FoodProperties meatFood(int nutrition, float saturation) {return new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build();}
 }

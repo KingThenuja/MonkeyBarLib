@@ -1,8 +1,8 @@
 package dev.thenu.mk.registry.Block.BlockFamilyBuilder;
 
 import dev.thenu.mk.registry.RegistryObjects.RegistryObject;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemGroup;
 
 public record BlockFamily(
         RegistryObject<Block> base,
@@ -14,7 +14,7 @@ public record BlockFamily(
         RegistryObject<Block> door,
         RegistryObject<Block> trapdoor
 ) {
-    public void addToTab(RegistryObject<CreativeModeTab> tab) {
+    public void addToTab(RegistryObject<ItemGroup> tab) {
         base.addToCreativeTab(tab);
         stairs.addToCreativeTab(tab);
         slab.addToCreativeTab(tab);

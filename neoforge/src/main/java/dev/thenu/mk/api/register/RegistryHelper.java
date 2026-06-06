@@ -100,6 +100,7 @@ public class RegistryHelper {
         return registerSimpleItem(name, new Item.Properties());
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(
             String name, BlockEntityFactory<T> factory, Block... validBlocks) {
         return wrap(BLOCK_ENTITIES.register(name,

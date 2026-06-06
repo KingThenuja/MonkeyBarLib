@@ -8,21 +8,19 @@ import dev.thenu.mk.registry.Block.Unprotected.TrapdoorBlock;
 import dev.thenu.mk.registry.RegistryObjects.RegistryObject;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -31,19 +29,19 @@ public class RegistryHelper {
 
     private final String modId;
 
-    private final Map<ResourceLocation, List<RegistryObject<?>>> tabEntries = new HashMap<>();
+    private final Map<Identifier, List<RegistryObject<?>>> tabEntries = new HashMap<>();
 
     public RegistryHelper(String modId) {
         this.modId = modId;
     }
 
-    public ResourceLocation rl(String name) {
-        return ResourceLocation.fromNamespaceAndPath(modId, name);
+    public Identifier rl(String name) {
+        return Identifier.of(modId, name);
     }
 
     public <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
-        ResourceLocation id = rl(name);
-        T registered = Registry.register(BuiltInRegistries.BLOCK, id, block.get());
+        Identifier id = rl(name);
+        T registered = Registry.register(Registries.BLOCK, id, block.get());
         return new RegistryObject<>(registered, id, this);
     }
 
@@ -52,105 +50,114 @@ public class RegistryHelper {
     }
 
     public <T extends Block> RegistryObject<T> registerBlockWithItem(
-            String name, Supplier<T> block, Item.Properties props) {
-        ResourceLocation id = rl(name);
-        T registered = Registry.register(BuiltInRegistries.BLOCK, id, block.get());
-        Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(registered, props));
+            String name, Supplier<T> block, Item.Settings props) {
+        Identifier id = rl(name);
+        T registered = Registry.register(Registries.BLOCK, id, block.get());
+        Registry.register(Registries.ITEM, id, new BlockItem(registered, props));
         return new RegistryObject<>(registered, id, this);
     }
 
     public <T extends Block> RegistryObject<T> registerBlockWithItem(String name, Supplier<T> block) {
-        return registerBlockWithItem(name, block, new Item.Properties());
+        return registerBlockWithItem(name, block, new Item.Settings());
     }
 
     public <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
-        ResourceLocation id = rl(name);
-        T registered = Registry.register(BuiltInRegistries.ITEM, id, item.get());
+        Identifier id = rl(name);
+        T registered = Registry.register(Registries.ITEM, id, item.get());
         return new RegistryObject<>(registered, id, this);
     }
 
-    public RegistryObject<Item> registerSimpleItem(String name, Item.Properties props) {
+    public RegistryObject<Item> registerSimpleItem(String name, Item.Settings props) {
         return registerItem(name, () -> new Item(props));
     }
 
     public RegistryObject<Item> registerSimpleItem(String name) {
-        return registerSimpleItem(name, new Item.Properties());
+        return registerSimpleItem(name, new Item.Settings());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(
+    public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(
             String name,
             BlockEntitySupplier<? extends T> factory,
             Block... validBlocks) {
-        ResourceLocation id = rl(name);
-        BlockEntityType<T> type = FabricBlockEntityTypeBuilder.<T>create((FabricBlockEntityTypeBuilder.Factory<? extends T>) factory, validBlocks).build(null);
-        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id, type);
+        Identifier id = rl(name);
+
+        BlockEntityType<T> type = FabricBlockEntityTypeBuilder.<T>create(
+                (pos, state) -> factory.create(pos, state),
+                validBlocks
+        ).build(null);
+
+        BlockEntityType<T> registered = Registry.register(Registries.BLOCK_ENTITY_TYPE, id, type);
+        return new RegistryObject<>(registered, id, this);
     }
 
     public RegistryObject<SoundEvent> registerSound(String name) {
-        ResourceLocation id = rl(name);
-        SoundEvent event = SoundEvent.createVariableRangeEvent(id);
-        Registry.register(BuiltInRegistries.SOUND_EVENT, id, event);
+        Identifier id = rl(name);
+
+        SoundEvent event = SoundEvent.of(id);
+
+        Registry.register(Registries.SOUND_EVENT, id, event);
         return new RegistryObject<>(event, id, this);
     }
 
-    public void addToTab(ResourceLocation tabId, RegistryObject<?> entry) {
+    public void addToTab(Identifier tabId, RegistryObject<?> entry) {
         tabEntries.computeIfAbsent(tabId, k -> new ArrayList<>()).add(entry);
     }
 
-    public void populateTab(ResourceLocation tabId, CreativeModeTab.Output output) {
+    public void populateTab(Identifier tabId, ItemGroup.Entries output) {
         List<RegistryObject<?>> entries = tabEntries.getOrDefault(tabId, List.of());
         for (RegistryObject<?> entry : entries) {
             Object obj = entry.get();
-            if (obj instanceof Item item) output.accept(item);
-            else if (obj instanceof Block block && block.asItem() != net.minecraft.world.item.Items.AIR)
-                output.accept(block.asItem());
+            if (obj instanceof Item item) {
+                output.add(item);
+            } else if (obj instanceof Block block && block.asItem() != Items.AIR) {
+                output.add(block.asItem());
+            }
         }
     }
 
-    public RegistryObject<CreativeModeTab> registerCreativeTab(String name, Supplier<ItemStack> icon) {
-        ResourceLocation id = rl(name);
-        CreativeModeTab tab = FabricItemGroup.builder()
-                .title(Component.translatable("itemGroup." + modId + "." + name))
+    public RegistryObject<ItemGroup> registerCreativeTab(String name, Supplier<ItemStack> icon) {
+        Identifier id = rl(name);
+        ItemGroup tab = FabricItemGroup.builder()
+                .displayName(Text.translatable("itemGroup." + modId + "." + name))
                 .icon(icon)
-                .displayItems((params, output) -> populateTab(id, output))
+                .entries((params, output) -> populateTab(id, output))
                 .build();
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id, tab);
+        Registry.register(Registries.ITEM_GROUP, id, tab);
         return new RegistryObject<>(tab, id, this);
     }
 
-    public BlockFamily makeFullBlockFamily(String name, BlockBehaviour.Properties props) {
+    public BlockFamily makeFullBlockFamily(String name, AbstractBlock.Settings props) {
 
         RegistryObject<Block> base = registerBlockWithItem(name,
                 () -> new Block(props));
 
         RegistryObject<Block> stairs = registerBlockWithItem(name + "_stairs",
-                () -> new StairBlock(base.get().defaultBlockState(),
-                        BlockBehaviour.Properties.ofFullCopy(base.get())));
+                () -> new StairBlock(base.get().getDefaultState(),
+                        AbstractBlock.Settings.copy(base.get())));
 
         RegistryObject<Block> slab = registerBlockWithItem(name + "_slab",
                 () -> new SlabBlock(
-                        BlockBehaviour.Properties.ofFullCopy(base.get())));
+                        AbstractBlock.Settings.copy(base.get())));
 
         RegistryObject<Block> wall = registerBlockWithItem(name + "_wall",
                 () -> new WallBlock(
-                        BlockBehaviour.Properties.ofFullCopy(base.get())));
+                        AbstractBlock.Settings.copy(base.get())));
 
         RegistryObject<Block> fence = registerBlockWithItem(name + "_fence",
                 () -> new FenceBlock(
-                        BlockBehaviour.Properties.ofFullCopy(base.get())));
+                        AbstractBlock.Settings.copy(base.get())));
 
         RegistryObject<Block> fenceGate = registerBlockWithItem(name + "_fence_gate",
                 () -> new FenceGateBlock(WoodType.OAK,
-                        BlockBehaviour.Properties.ofFullCopy(base.get())));
+                        AbstractBlock.Settings.copy(base.get())));
 
         RegistryObject<Block> door = registerBlockWithItem(name + "_door",
                 () -> new DoorBlock(BlockSetType.OAK,
-                        BlockBehaviour.Properties.ofFullCopy(base.get()).noOcclusion()));
+                        AbstractBlock.Settings.copy(base.get()).nonOpaque()));
 
         RegistryObject<Block> trapdoor = registerBlockWithItem(name + "_trapdoor",
                 () -> new TrapdoorBlock(BlockSetType.OAK,
-                        BlockBehaviour.Properties.ofFullCopy(base.get()).noOcclusion()));
+                        AbstractBlock.Settings.copy(base.get()).nonOpaque()));
 
         return new BlockFamily(base, stairs, slab, wall, fence, fenceGate, door, trapdoor);
     }

@@ -1,10 +1,9 @@
 package dev.thenu.mk.registry.Block.Unprotected;
 
-import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.block.BlockSetType;
 
-public class TrapdoorBlock extends TrapDoorBlock {
-    public TrapdoorBlock(BlockSetType type, Properties props) {
+public class TrapdoorBlock extends net.minecraft.block.TrapdoorBlock {
+    public TrapdoorBlock(BlockSetType type, Settings props) {
         super(type, props);
     }
 }

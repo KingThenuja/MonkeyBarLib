@@ -1,12 +1,13 @@
 package dev.thenu.mk.api.register;
 
-import dev.thenu.mk.registry.Block.BlockEntity.BlockEntityFactory;
+import dev.thenu.mk.registry.Block.BlockEntity.BlockEntitySupplier;
 import dev.thenu.mk.registry.Block.BlockFamilyBuilder.BlockFamily;
 import dev.thenu.mk.registry.Block.Unprotected.DoorBlock;
 import dev.thenu.mk.registry.Block.Unprotected.StairBlock;
 import dev.thenu.mk.registry.Block.Unprotected.TrapdoorBlock;
 import dev.thenu.mk.registry.RegistryObjects.RegistryObject;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -76,12 +77,14 @@ public class RegistryHelper {
         return registerSimpleItem(name, new Item.Properties());
     }
 
-    public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(
-            String name, BlockEntityFactory<T> factory, Block... validBlocks) {
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(
+            String name,
+            BlockEntitySupplier<? extends T> factory,
+            Block... validBlocks) {
         ResourceLocation id = rl(name);
-        BlockEntityType<T> type = BlockEntityType.Builder.of(factory::create, validBlocks).build();
-        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id, type);
-        return new RegistryObject<>(type, id, this);
+        BlockEntityType<T> type = FabricBlockEntityTypeBuilder.<T>create((FabricBlockEntityTypeBuilder.Factory<? extends T>) factory, validBlocks).build(null);
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id, type);
     }
 
     public RegistryObject<SoundEvent> registerSound(String name) {

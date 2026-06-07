@@ -3,7 +3,8 @@ plugins {
     id 'net.neoforged.moddev'
     id "com.modrinth.minotaur"
 }
-
+def modrinthToken = System.getenv("MODRINTH_TOKEN")
+def curseforgeToken = System.getenv("CURSEFORGE_TOKEN")
 neoForge {
     version = neoforge_version
     // Automatically enable neoforge AccessTransformers if the file exists
@@ -26,8 +27,6 @@ neoForge {
         data {
             data()
 
-            // DataGen can be run by - "./gradlew :neoforge:runData" in Terminal.
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
 
         }
@@ -42,12 +41,12 @@ neoForge {
     }
 }
 modrinth {
-    token = "${token}"
+    token = modrinthToken
     projectId = "${projectId}"
-    versionNumber = "1.0"
-    versionType = "release"
-    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.21", "1.21.1"]
+    versionNumber = "${version}"
+    versionType = "${versionType}"
+    uploadFile = jar
+    gameVersions = ["${minecraft_version}"]
     loaders = ["neoforge"]
     changelog = rootProject.file("CHANGELOG.md").text
 }

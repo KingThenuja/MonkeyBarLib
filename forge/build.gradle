@@ -10,6 +10,8 @@ jar {
 
 }
 
+def modrinthToken = System.getenv("MODRINTH_TOKEN")
+def curseforgeToken = System.getenv("CURSEFORGE_TOKEN")
 minecraft {
     mappings channel: 'official', version: minecraft_version
 
@@ -80,7 +82,7 @@ publishing {
     }
 }
 modrinth {
-    token = "${token}"
+    token = modrinthToken
     projectId = "${projectId}"
     versionNumber = "1.0"
     versionType = "release"

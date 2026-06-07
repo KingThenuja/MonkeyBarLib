@@ -3,7 +3,8 @@ plugins {
     id 'net.neoforged.moddev'
     id "com.modrinth.minotaur"
 }
-
+def modrinthToken = System.getenv("MODRINTH_TOKEN")
+def curseforgeToken = System.getenv("CURSEFORGE_TOKEN")
 neoForge {
     neoFormVersion = neo_form_version
 
@@ -35,7 +36,7 @@ neoForge {
 }
 
 modrinth {
-    token = "${token}"
+    token = modrinthToken
     projectId = "${projectId}"
     versionNumber = "1.0"
     versionType = "release"
